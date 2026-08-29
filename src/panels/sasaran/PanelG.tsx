@@ -41,6 +41,13 @@ export function PanelG() {
   const [hovered, setHovered] = useState<string | null>(null);
 
   const categoryColor = useMemo(() => new Map((categories.data ?? []).map((c) => [c.dashboard_category_idn, c.category_color_hex])), [categories.data]);
+  // Stable array references matter here, not just avoiding recomputation:
+  // StripPlot's shared-background cache is keyed by array identity, so a
+  // fresh array every render (e.g. from hover state changes) would defeat
+  // the cache and rebuild all 438 background dots per row again.
+  const triAll = useMemo(() => (villages.data ?? []).map((v) => v.TRI_percentile_DIY), [villages.data]);
+  const paiAll = useMemo(() => (villages.data ?? []).map((v) => v.PAI_percentile_DIY), [villages.data]);
+  const villageById = useMemo(() => new Map((villages.data ?? []).map((v) => [v.village_id, v])), [villages.data]);
 
   const filtered = useMemo(() => {
     if (!villages.data) return [];
@@ -56,6 +63,10 @@ export function PanelG() {
       return true;
     });
   }, [villages.data, filters]);
+
+  // O(1) membership for the companion map's dimIf, checked once per feature
+  // per render (438 features) — a .some() scan there would be O(n^2).
+  const filteredIds = useMemo(() => new Set(filtered.map((v) => v.village_id)), [filtered]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -102,8 +113,6 @@ export function PanelG() {
   }
 
   const kabupatenOptions = [...new Set(villages.data.map((v) => v.kabupaten))].sort();
-  const triAll = villages.data.map((v) => v.TRI_percentile_DIY);
-  const paiAll = villages.data.map((v) => v.PAI_percentile_DIY);
   const immediateCats = categories.data.filter((c) => c.priority_order === 1);
   const laterCats = categories.data.filter((c) => c.priority_order !== 1).sort((a, b) => a.priority_order - b.priority_order);
 
@@ -265,9 +274,9 @@ export function PanelG() {
             hoveredId={hovered ?? selected}
             onHover={setHovered}
             onSelect={setSelected}
-            dimIf={(id) => !sorted.some((v) => v.village_id === id)}
+            dimIf={(id) => !filteredIds.has(id)}
             colorFor={(id) => {
-              const v = villages.data!.find((vv) => vv.village_id === id);
+              const v = villageById.get(id);
               return v ? categoryColor.get(v.dashboard_category_idn) ?? '#cfcfc7' : '#cfcfc7';
             }}
           />

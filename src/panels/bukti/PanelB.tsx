@@ -31,6 +31,17 @@ export function PanelB() {
     (decomposition.data ?? []).filter((d) => d.channel === 'DIS' && d.constraint_class === 'Terrain-constrained').map((d) => d.village_id),
   ), [decomposition.data]);
   const hoveredVillage = hovered ? byId.get(hovered) : null;
+  // Memoized independent of hover/mouse state: onMouseMove over the map grid
+  // (for the tooltip) fires on every pixel of movement, and without this the
+  // 438-point OLS fit inside ScatterFit was recomputing on every tick.
+  const kabColorsForPoints = config?.ramps.kabupaten as Record<string, string> | undefined;
+  const points = useMemo(() => (villages.data ?? [])
+    .map((v) => ({
+      x: v.TRI_percentile_DIY, y: v.PAI_percentile_DIY,
+      color: kabColorsForPoints?.[v.kabupaten] ?? '#999',
+      outlined: disConstrainedIds.has(v.village_id),
+    }))
+    .sort((a, b) => Number(a.outlined) - Number(b.outlined)), [villages.data, kabColorsForPoints, disConstrainedIds]);
 
   const loading = geom.loading || villages.loading || decomposition.loading || !config;
   if (loading) return <PanelSection id="medan-aksesibilitas" letter="B" title="Medan dan aksesibilitas"><Skeleton /></PanelSection>;
@@ -39,14 +50,6 @@ export function PanelB() {
   }
   const geomData = geom.data;
   const kabColors = config.ramps.kabupaten as Record<string, string>;
-
-  const points = villages.data
-    .map((v) => ({
-      x: v.TRI_percentile_DIY, y: v.PAI_percentile_DIY,
-      color: kabColors[v.kabupaten] ?? '#999',
-      outlined: disConstrainedIds.has(v.village_id),
-    }))
-    .sort((a, b) => Number(a.outlined) - Number(b.outlined));
 
   return (
     <PanelSection id="medan-aksesibilitas" letter="B" title="Medan dan aksesibilitas">

@@ -29,6 +29,18 @@ export function PanelH({ village_id, onClose }: { village_id: string; onClose: (
   const profile = nonfarm.data?.get(village_id);
   const category = categories.data?.find((c) => c.dashboard_category_idn === village?.dashboard_category_idn);
 
+  // Stable references so StripPlot's shared-background cache (keyed by
+  // array identity) hits across every card the user opens, instead of
+  // rebuilding each distribution's 438 background dots per open.
+  const allValuesByField = useMemo(() => {
+    const data = villages.data ?? [];
+    return {
+      tri: data.map((v) => v.TRI_percentile_DIY), pai: data.map((v) => v.PAI_percentile_DIY),
+      ffas: data.map((v) => v.FFAS_std), dis: data.map((v) => v.DIS_std), di: data.map((v) => v.DI_std),
+      miFfas: data.map((v) => v.MI_FFAS), miDis: data.map((v) => v.MI_DIS),
+    };
+  }, [villages.data]);
+
   const kabMedian = useMemo(() => {
     if (!villages.data || !village) return null;
     const inKab = villages.data.filter((v) => v.kabupaten === village.kabupaten);
@@ -59,13 +71,13 @@ export function PanelH({ village_id, onClose }: { village_id: string; onClose: (
 
             <div className="subpanel">
               <span className="subpanel-title">Posisi</span>
-              <IndexRow label="Keterjalan medan (persentil)" raw={fmtIndex(village.TRI_percentile_DIY, 1)} all={villages.data.map((v) => v.TRI_percentile_DIY)} value={village.TRI_percentile_DIY} median={kabMedian.tri} />
-              <IndexRow label="Aksesibilitas fisik (persentil)" raw={fmtIndex(village.PAI_percentile_DIY, 1)} all={villages.data.map((v) => v.PAI_percentile_DIY)} value={village.PAI_percentile_DIY} median={kabMedian.pai} />
-              <IndexRow label="Akses keuangan formal (std)" raw={fmtIndex(village.FFAS_std, 3, true)} all={villages.data.map((v) => v.FFAS_std)} value={village.FFAS_std} median={kabMedian.ffas} />
-              <IndexRow label="Infrastruktur digital (std)" raw={fmtIndex(village.DIS_std, 3, true)} all={villages.data.map((v) => v.DIS_std)} value={village.DIS_std} median={kabMedian.dis} />
-              <IndexRow label="Indeks digital gabungan (std)" raw={fmtIndex(village.DI_std, 3, true)} all={villages.data.map((v) => v.DI_std)} value={village.DI_std} median={kabMedian.di} />
-              <IndexRow label="Indeks pasar — keuangan formal" raw={fmtIndex(village.MI_FFAS, 3, true)} all={villages.data.map((v) => v.MI_FFAS)} value={village.MI_FFAS} median={kabMedian.miFfas} />
-              <IndexRow label="Indeks pasar — infrastruktur digital" raw={fmtIndex(village.MI_DIS, 3, true)} all={villages.data.map((v) => v.MI_DIS)} value={village.MI_DIS} median={kabMedian.miDis} />
+              <IndexRow label="Keterjalan medan (persentil)" raw={fmtIndex(village.TRI_percentile_DIY, 1)} all={allValuesByField.tri} value={village.TRI_percentile_DIY} median={kabMedian.tri} />
+              <IndexRow label="Aksesibilitas fisik (persentil)" raw={fmtIndex(village.PAI_percentile_DIY, 1)} all={allValuesByField.pai} value={village.PAI_percentile_DIY} median={kabMedian.pai} />
+              <IndexRow label="Akses keuangan formal (std)" raw={fmtIndex(village.FFAS_std, 3, true)} all={allValuesByField.ffas} value={village.FFAS_std} median={kabMedian.ffas} />
+              <IndexRow label="Infrastruktur digital (std)" raw={fmtIndex(village.DIS_std, 3, true)} all={allValuesByField.dis} value={village.DIS_std} median={kabMedian.dis} />
+              <IndexRow label="Indeks digital gabungan (std)" raw={fmtIndex(village.DI_std, 3, true)} all={allValuesByField.di} value={village.DI_std} median={kabMedian.di} />
+              <IndexRow label="Indeks pasar — keuangan formal" raw={fmtIndex(village.MI_FFAS, 3, true)} all={allValuesByField.miFfas} value={village.MI_FFAS} median={kabMedian.miFfas} />
+              <IndexRow label="Indeks pasar — infrastruktur digital" raw={fmtIndex(village.MI_DIS, 3, true)} all={allValuesByField.miDis} value={village.MI_DIS} median={kabMedian.miDis} />
             </div>
 
             <div className="subpanel">

@@ -18,16 +18,17 @@ export function PanelF() {
   const sorted = useMemo(() => [...(villages.data ?? [])].sort((a, b) => a.desa.localeCompare(b.desa)), [villages.data]);
   const village = villages.data?.find((v) => v.village_id === selected);
   const profile = nonfarm.data?.get(selected);
+  // Memoized so picking a different village in the dropdown doesn't redo the
+  // 438-point OLS fit for a scatter that hasn't actually changed.
+  const points = useMemo(() => (villages.data ?? []).map((v) => ({
+    x: v.PAI, y: v.NonFarmEnt,
+    color: v.TerrainPattern !== 'Neither channel terrain-constrained' ? 'var(--bukit)' : 'var(--andesit-soft)',
+    outlined: v.TerrainPattern !== 'Neither channel terrain-constrained',
+  })).sort((a, b) => Number(a.outlined) - Number(b.outlined)), [villages.data]);
 
   const loading = villages.loading || nonfarm.loading;
   if (loading) return <PanelSection id="basis-ekonomi" letter="F" title="Basis ekonomi non-pertanian"><Skeleton /></PanelSection>;
   if (!villages.data || !nonfarm.data) return <PanelSection id="basis-ekonomi" letter="F" title="Basis ekonomi non-pertanian"><p className="notice-bar">Estimasi belum tersedia pada berkas data yang dimuat.</p></PanelSection>;
-
-  const points = villages.data.map((v) => ({
-    x: v.PAI, y: v.NonFarmEnt,
-    color: v.TerrainPattern !== 'Neither channel terrain-constrained' ? 'var(--bukit)' : 'var(--andesit-soft)',
-    outlined: v.TerrainPattern !== 'Neither channel terrain-constrained',
-  })).sort((a, b) => Number(a.outlined) - Number(b.outlined));
 
   return (
     <PanelSection id="basis-ekonomi" letter="F" title="Basis ekonomi non-pertanian">
