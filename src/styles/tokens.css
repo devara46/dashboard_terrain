@@ -1,0 +1,117 @@
+:root {
+  --kapur: #eef0ec;
+  --andesit: #1c2724;
+  --kontur: #8b968f;
+  --telaga: #1b6e7e;
+  --lembah: #2f7a86;
+  --bukit: #9e4a34;
+  --nyala: #d9a13c;
+
+  --kapur-raised: #e4e7e1;
+  --andesit-soft: #3a4a45;
+  --focus-ring: #1b6e7e;
+
+  --face-display: 'Archivo', 'Arial Narrow', sans-serif;
+  --face-body: 'Source Serif 4', 'Georgia', serif;
+  --face-data: 'JetBrains Mono', 'Consolas', monospace;
+
+  --step-0: 0.8125rem;
+  --step-1: 0.9375rem;
+  --step-2: 1.125rem;
+  --step-3: 1.75rem;
+  --step-4: 2.75rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.875rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+
+  --motion-fast: 150ms;
+  --motion-hero: 900ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  /* The dashboard is a document-style artifact designed against a fixed
+     limestone-paper surface; it intentionally does not adopt a dark palette. */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--kapur);
+}
+
+body {
+  margin: 0;
+  background: var(--kapur);
+  color: var(--andesit);
+  font-family: var(--face-body);
+  font-size: var(--step-1);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--face-display);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.eyebrow {
+  font-family: var(--face-display);
+  font-weight: 600;
+  font-size: var(--step-0);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--telaga);
+}
+
+.place-name {
+  font-family: var(--face-body);
+  font-style: italic;
+}
+
+.data-face {
+  font-family: var(--face-data);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--step-0);
+}
+
+a {
+  color: var(--telaga);
+}
+
+button, select, input {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.hairline {
+  border: none;
+  border-top: 1px solid var(--kontur);
+  margin: 0;
+}
+
+.missing-value {
+  color: var(--kontur);
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

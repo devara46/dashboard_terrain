@@ -1,0 +1,17 @@
+{
+  "n_villages": 438,
+  "n_ffas_terrain": 7,
+  "n_dis_terrain": 64,
+  "n_both_terrain": 7,
+  "n_dis_only_terrain": 57,
+  "n_ffas_only_terrain": 0,
+  "n_ffas_residual": 238,
+  "n_dis_residual": 181,
+  "n_immediate_priority": 51,
+  "n_dual_supply_priority": 48,
+  "n_dual_supply_priority_gunungkidul": 41,
+  "n_channel_divergent": 156,
+  "pct_channel_divergent": 35.6,
+  "mean_tri_pct_dis_terrain": 88.4,
+  "mean_pai_pct_dis_terrain": 28.1
+}

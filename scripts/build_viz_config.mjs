@@ -1,0 +1,89 @@
+// Authors public/data/viz_config.json: presentation settings only (class
+// breaks, ramps, labels, glossary, version). No analytical values live here —
+// those all come from the delivered split files under public/data/.
+import { writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const OUT = path.join(__dirname, '..', 'public', 'data', 'viz_config.json');
+
+const config = {
+  breaks: {
+    // Quantile-ish breaks read off the delivered villages_geography.csv /
+    // villages_outcomes.csv distributions (see scripts/build_viz_config.mjs
+    // history for the percentile scan). Four thresholds -> five classes.
+    TRI: { method: 'quantile-informed', values: [1.4, 1.7, 2.5, 4.5] },
+    PAI: { method: 'quantile-informed', values: [-1.3, -0.4, 0.4, 1.3] },
+    FFAS_count: { method: 'quantile-informed', values: [-2.3, -1, 0.8, 2.7] },
+    // DIS is handled specially (see src/lib/disClass.ts): fixed manual
+    // breaks inside [-5, 5], with the 8 villages outside that range shown as
+    // a separate outlier class rather than stretching the ramp. Per
+    // spesifikasi_dashboard_v2.md section 4.
+    DIS: { method: 'manual-with-outlier-class', values: [-2, -0.5, 0.5, 2], outlierBound: 5 },
+  },
+  ramps: {
+    sequential_tri: ['#f4f1e8', '#d8cfa9', '#b79a5c', '#8f6a34', '#5f4318'],
+    diverging_pai: ['#9e4a34', '#c98868', '#eef0ec', '#7bacb4', '#2f7a86'],
+    diverging_ffas_count: ['#9e4a34', '#c98868', '#eef0ec', '#7bacb4', '#2f7a86'],
+    dis_with_outliers: {
+      low_outlier: '#5f3210',
+      classes: ['#9e4a34', '#c98868', '#eef0ec', '#7bacb4', '#2f7a86'],
+      high_outlier: '#14424a',
+    },
+    // Distinct from the five category_color_hex values in lookup_categories.csv
+    // by construction, so a kabupaten dot and a policy chip are never confusable.
+    kabupaten: {
+      'BANTUL': '#4E79A7',
+      'GUNUNGKIDUL': '#B07AA1',
+      'KULON PROGO': '#59A14F',
+      'SLEMAN': '#C9A227',
+      'YOGYAKARTA': '#E15759',
+    },
+    terrain_pattern: {
+      'Neither channel terrain-constrained': '#cfd6cf',
+      'DIS terrain-constrained only': '#c98868',
+      'Both channels terrain-constrained': '#9e4a34',
+    },
+    quadrant: {
+      'Well-served': '#2f7a86',
+      'Priority Intervention': '#9e4a34',
+      'Structurally Lagging': '#c98868',
+      'Oversupplied': '#7bacb4',
+    },
+  },
+  labels: {
+    TRI: 'Keterjalan medan (TRI)',
+    PAI: 'Aksesibilitas fisik (PAI)',
+    FFAS_count: 'Akses keuangan formal (jumlah)',
+    DIS: 'Infrastruktur digital (DIS)',
+    DI_final: 'Indeks digital gabungan',
+    MI_FFAS: 'Indeks pasar — keuangan formal',
+    MI_DIS: 'Indeks pasar — infrastruktur digital',
+    NonFarmEnt: 'Basis ekonomi non-pertanian',
+    demand_level_idn: 'Tingkat permintaan',
+    urban_rural: 'Perkotaan / perdesaan',
+  },
+  definitions: {
+    TRI: 'Terrain Ruggedness Index — ukuran keterjalan medan berbasis variasi elevasi antar piksel bertetangga.',
+    PAI: 'Physical Accessibility Index — indeks aksesibilitas fisik dari kepadatan jalan, jarak ke jalan beraspal, dan waktu tempuh.',
+    FFAS: 'Formal Financial Access Supply — hitungan/indeks ketersediaan akses keuangan formal di desa.',
+    DIS: 'Digital Infrastructure Supply — indeks ketersediaan infrastruktur digital di desa.',
+    'DI_final': 'Indeks digital gabungan yang menjadi dasar klasifikasi kanal digital.',
+    'komponen medan': 'Bagian dari kesenjangan pasokan yang dijelaskan oleh keterjalan medan pada dekomposisi Tahap 2.',
+    'komponen residual': 'Bagian dari kesenjangan pasokan yang tidak dijelaskan oleh medan — dapat mencakup cakupan penyedia, desain layanan, keterjangkauan, kapasitas kelembagaan, dan faktor lain yang tidak dipisahkan dalam dekomposisi ini.',
+    'selang kepercayaan bootstrap': 'Rentang ketidakpastian pada setiap komponen, dihasilkan dari penarikan ulang sampel (bootstrap) berulang.',
+    'margin dominasi': 'Selisih antara komponen yang lebih besar dan komponen lainnya; digunakan untuk menentukan apakah dominasi didukung data.',
+    kuadran: 'Posisi relatif indeks permintaan terhadap ketersediaan layanan pada suatu kanal; bersifat deskriptif, bukan variabel estimasi.',
+    'basis ekonomi non-pertanian': 'Indeks komposit dari sembilan komponen usaha non-pertanian tingkat desa.',
+    persentil: 'Posisi suatu desa relatif terhadap 438 desa dan kelurahan lain di DIY, dari 0 (terendah) sampai 100 (tertinggi).',
+    'MI_FFAS': 'Market Index — posisi pasar keuangan formal desa relatif terhadap DIY.',
+    'MI_DIS': 'Market Index — posisi pasar infrastruktur digital desa relatif terhadap DIY.',
+  },
+  sources_note: 'Seluruh variabel tingkat desa bersumber dari data yang dapat didiseminasikan pada tingkat desa. SAKERNAS hanya dapat didiseminasikan pada tingkat kabupaten dan kota, dan SUSENAS tidak dapat dikaitkan secara spasial di bawah tingkat kabupaten dan kota. Keduanya tidak digunakan sebagai variabel tingkat desa. Yang dipublikasikan pada dasbor ini adalah indeks turunan dan hasil klasifikasi, bukan catatan sumber.',
+  interpretive_boundary: 'Dasbor ini menyajikan hasil klasifikasi deskriptif dan diagnostik pada tingkat desa. Klasifikasi kendala menunjukkan komponen mana yang mendominasi kesenjangan pasokan di setiap desa, bukan besaran efek kausal. Kesimpulan mengenai perbandingan sensitivitas kedua kanal terhadap aksesibilitas didasarkan pada hasil estimasi variabel instrumen yang dilaporkan dalam naskah, bukan pada klasifikasi di dasbor ini.',
+  version: { dashboard_version: '0.2.0', data_build_date: '2026-08-29', placeholder: false },
+};
+
+writeFileSync(OUT, JSON.stringify(config, null, 2));
+console.log(`Wrote ${OUT}`);

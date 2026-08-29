@@ -1,0 +1,17 @@
+﻿field,value_en,value_idn
+quadrant,Oversupplied,Ketersediaan Relatif Tinggi
+quadrant,Well-served,Terlayani Baik
+quadrant,Priority Intervention,Prioritas Intervensi
+quadrant,Structurally Lagging,Tertinggal Struktural
+constraint_class,No significant dominance,Tidak Ada Dominasi Signifikan
+constraint_class,Residual-constrained,Dominan Residual / Non-Terrain
+constraint_class,Terrain-constrained,Dominan Medan
+terrain_pattern,Neither channel terrain-constrained,Tidak Ada Kanal Terkendala Medan
+terrain_pattern,DIS terrain-constrained only,Hanya Kanal Digital Terkendala Medan
+terrain_pattern,Both channels terrain-constrained,Kedua Kanal Terkendala Medan
+channel_pattern,Same quadrant,Kuadran Sama
+channel_pattern,FFAS ahead of DIS,Keuangan Formal Lebih Maju
+channel_pattern,DIS ahead of FFAS,Infrastruktur Digital Lebih Maju
+channel_pattern,Other divergence,Divergensi Lain
+demand_family,High demand,Permintaan Tinggi
+demand_family,Low demand,Permintaan Rendah
