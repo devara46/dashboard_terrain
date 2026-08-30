@@ -4,8 +4,8 @@ import type { Topology, GeometryCollection } from 'topojson-specification';
 import type {
   VillageMaster, VillageGeography, VillageOutcomes, VillageDemand, NonfarmComponentRow,
   VillageTypology, VillageDecomposition, VillagePattern, VillagePolicy,
-  LookupCategory, LookupLabel, AggKabupaten, SummaryHeadline, VizConfig,
-  VillageGeomCollection, Channel,
+  LookupCategory, LookupLabel, LookupActionPolicy, AggKabupaten, SummaryHeadline, PaperResults,
+  KapanewonBand, VizConfig, VillageGeomCollection, Channel,
 } from './types';
 
 const DATA_BASE = import.meta.env.BASE_URL + 'data/';
@@ -143,6 +143,35 @@ export function loadLookupCategories(): Promise<LookupCategory[]> {
   });
 }
 
+export function loadLookupActionsPolicy(): Promise<LookupActionPolicy[]> {
+  return cached('lookup_actions_policy', async () => {
+    const rows = await loadCsv('lookup_actions_policy.csv');
+    return rows.map((r) => ({
+      category_key: r.category_key, band: r.band as LookupActionPolicy['band'], band_idn: r.band_idn,
+      n: num(r.n), verb_idn: r.verb_idn, question_idn: r.question_idn, plain_idn: r.plain_idn,
+      instrument_idn: r.instrument_idn, lead_actor: r.lead_actor,
+      support_actors: r.support_actors.split(';').map((s) => s.trim()).filter(Boolean),
+      caution_idn: r.caution_idn, color: r.color,
+    }));
+  });
+}
+
+// Band is not a stored column: it's reached by joining a village's
+// dashboard_category_idn -> lookup_categories (for category_key) ->
+// lookup_actions_policy (for band + all the plain-language decision copy).
+export async function loadBandByCategoryIdn(): Promise<Map<string, LookupActionPolicy>> {
+  return cached('band_by_category_idn', async () => {
+    const [categories, actions] = await Promise.all([loadLookupCategories(), loadLookupActionsPolicy()]);
+    const actionByKey = new Map(actions.map((a) => [a.category_key, a]));
+    const map = new Map<string, LookupActionPolicy>();
+    for (const c of categories) {
+      const action = actionByKey.get(c.category_key);
+      if (action) map.set(c.dashboard_category_idn, action);
+    }
+    return map;
+  });
+}
+
 export function loadLookupLabels(): Promise<LookupLabel[]> {
   return cached('lookup_labels', async () => {
     const rows = await loadCsv('lookup_labels.csv');
@@ -166,6 +195,14 @@ export function loadSummaryHeadline(): Promise<SummaryHeadline> {
   return cached('summary_headline', () => fetchJson<SummaryHeadline>('summary_headline.json'));
 }
 
+export function loadPaperResults(): Promise<PaperResults> {
+  return cached('paper_results', () => fetchJson<PaperResults>('paper_results.json'));
+}
+
+export function loadKapanewonBands(): Promise<KapanewonBand[]> {
+  return cached('kapanewon_bands', () => fetchJson<KapanewonBand[]>('kapanewon_bands.json'));
+}
+
 export function loadVizConfig(): Promise<VizConfig> {
   return cached('viz_config', () => fetchJson<VizConfig>('viz_config.json'));
 }
@@ -178,25 +215,31 @@ export function loadVillagesGeom(): Promise<VillageGeomCollection> {
   });
 }
 
-export interface VillageJoined extends VillageMaster, VillageGeography, VillageOutcomes, VillageDemand, VillageTypology, VillagePattern, VillagePolicy {}
+export interface VillageJoined extends VillageMaster, VillageGeography, VillageOutcomes, VillageDemand, VillageTypology, VillagePattern, VillagePolicy {
+  action: LookupActionPolicy;
+}
 
 export async function loadVillagesJoined(): Promise<VillageJoined[]> {
   return cached('villages_joined', async () => {
-    const [master, geo, outcomes, demand, typology, patterns, policy] = await Promise.all([
+    const [master, geo, outcomes, demand, typology, patterns, policy, bandByCategory] = await Promise.all([
       loadVillagesMaster(), loadVillagesGeography(), loadVillagesOutcomes(), loadVillagesDemand(),
-      loadVillagesTypology(), loadVillagesPatterns(), loadVillagesPolicy(),
+      loadVillagesTypology(), loadVillagesPatterns(), loadVillagesPolicy(), loadBandByCategoryIdn(),
     ]);
     const byId = <T extends { village_id: string }>(arr: T[]) => new Map(arr.map((r) => [r.village_id, r]));
     const geoM = byId(geo), outM = byId(outcomes), demM = byId(demand), typM = byId(typology), patM = byId(patterns), polM = byId(policy);
-    return master.map((m) => ({
-      ...m,
-      ...(geoM.get(m.village_id) as VillageGeography),
-      ...(outM.get(m.village_id) as VillageOutcomes),
-      ...(demM.get(m.village_id) as VillageDemand),
-      ...(typM.get(m.village_id) as VillageTypology),
-      ...(patM.get(m.village_id) as VillagePattern),
-      ...(polM.get(m.village_id) as VillagePolicy),
-    }));
+    return master.map((m) => {
+      const pol = polM.get(m.village_id) as VillagePolicy;
+      return {
+        ...m,
+        ...(geoM.get(m.village_id) as VillageGeography),
+        ...(outM.get(m.village_id) as VillageOutcomes),
+        ...(demM.get(m.village_id) as VillageDemand),
+        ...(typM.get(m.village_id) as VillageTypology),
+        ...(patM.get(m.village_id) as VillagePattern),
+        ...pol,
+        action: bandByCategory.get(pol.dashboard_category_idn) as LookupActionPolicy,
+      };
+    });
   });
 }
 

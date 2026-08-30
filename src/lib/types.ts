@@ -159,6 +159,60 @@ export interface VizConfig {
   version: { dashboard_version: string; data_build_date: string; placeholder: boolean };
 }
 
+export type Band = 'A' | 'B' | 'C' | 'D';
+
+export interface LookupActionPolicy {
+  category_key: string;
+  band: Band;
+  band_idn: string;
+  n: number;
+  verb_idn: string;
+  question_idn: string;
+  plain_idn: string;
+  instrument_idn: string;
+  lead_actor: string;
+  support_actors: string[];
+  caution_idn: string;
+  color: string;
+}
+
+export interface KapanewonBand {
+  kabupaten: string;
+  kecamatan: string;
+  A: number;
+  B: number;
+  C: number;
+  D: number;
+  total: number;
+}
+
+export interface PaperResults {
+  leapfrogging_prediction: { label_predicted: string; label_observed: string };
+  terrain_accessibility: {
+    pearson_all_diy: number; spearman_all_diy: number; partial_within_kabupaten: number;
+    tri_on_pai_coef: number; tri_on_pai_p: number; weak_instrument_f: number;
+  };
+  two_channel_estimate: {
+    ffas: { coef: number; ci_lo: number; ci_hi: number };
+    dis: { coef: number; ci_lo: number; ci_hi: number };
+    difference: number; anderson_rubin_p: number; confidence_set: { lo: number; hi: number };
+  };
+  spatial_dependency: {
+    rho_ffas: number; rho_dis: number; difference: number; ci90: { lo: number; hi: number }; weight_matrix: string;
+  };
+  terrain_dominant_counts: { dis: number; ffas: number; ffas_only: number };
+  mechanism_ffas: {
+    nonfarm_base_pct: number; nonfarm_base_pct_dis: number;
+    livelihood_shift_pct: number; livelihood_shift_pct_dis: number;
+  };
+  composition_beat: {
+    total: number; residual_both: number; residual_ffas_no_dominance_dis: number;
+    residual_ffas_terrain_dis: number; no_dominance_ffas_terrain_dis: number; no_dominance_ffas_residual_dis: number;
+  };
+  limitations: { title: string; body: string }[];
+  robustness_checks: { label: string; detail: string }[];
+}
+
 export interface VillageGeomFeature {
   type: 'Feature';
   properties: { village_id: string };

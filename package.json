@@ -1,7 +1,7 @@
 {
   "name": "terrain-barrier-dashboard",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,9 @@
     "sync-data": "node scripts/sync_real_data.mjs",
     "build-geometry": "node scripts/build_geometry.mjs",
     "build-viz-config": "node scripts/build_viz_config.mjs",
-    "build-data": "npm run sync-data && npm run build-geometry && npm run build-viz-config"
+    "build-paper-results": "node scripts/build_paper_results.mjs",
+    "build-kapanewon-bands": "node scripts/build_kapanewon_bands.mjs",
+    "build-data": "npm run sync-data && npm run build-geometry && npm run build-viz-config && npm run build-paper-results && npm run build-kapanewon-bands"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",

@@ -82,7 +82,7 @@ const config = {
   },
   sources_note: 'Seluruh variabel tingkat desa bersumber dari data yang dapat didiseminasikan pada tingkat desa. SAKERNAS hanya dapat didiseminasikan pada tingkat kabupaten dan kota, dan SUSENAS tidak dapat dikaitkan secara spasial di bawah tingkat kabupaten dan kota. Keduanya tidak digunakan sebagai variabel tingkat desa. Yang dipublikasikan pada dasbor ini adalah indeks turunan dan hasil klasifikasi, bukan catatan sumber.',
   interpretive_boundary: 'Dasbor ini menyajikan hasil klasifikasi deskriptif dan diagnostik pada tingkat desa. Klasifikasi kendala menunjukkan komponen mana yang mendominasi kesenjangan pasokan di setiap desa, bukan besaran efek kausal. Kesimpulan mengenai perbandingan sensitivitas kedua kanal terhadap aksesibilitas didasarkan pada hasil estimasi variabel instrumen yang dilaporkan dalam naskah, bukan pada klasifikasi di dasbor ini.',
-  version: { dashboard_version: '0.2.0', data_build_date: '2026-08-29', placeholder: false },
+  version: { dashboard_version: '0.4.0', data_build_date: '2026-08-30', placeholder: false },
 };
 
 writeFileSync(OUT, JSON.stringify(config, null, 2));

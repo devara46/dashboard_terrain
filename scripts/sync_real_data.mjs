@@ -21,6 +21,7 @@ const FILES = [
   'villages_policy.csv',
   'lookup_categories.csv',
   'lookup_labels.csv',
+  'lookup_actions_policy.csv',
   'agg_kabupaten.csv',
   'summary_headline.json',
 ];

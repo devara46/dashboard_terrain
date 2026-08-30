@@ -1,31 +1,25 @@
 import { useEffect, useState } from 'react';
 
-export type Mode = 'bukti' | 'sasaran';
-
 export interface Route {
-  mode: Mode;
-  panel: string;
+  section: string;
   param: string | null;
 }
 
-const DEFAULT_ROUTE: Route = { mode: 'bukti', panel: 'temuan-utama', param: null };
+const DEFAULT_ROUTE: Route = { section: 'ringkasan', param: null };
 
 export function parseHash(hash: string): Route {
   const clean = hash.replace(/^#\/?/, '');
   const parts = clean.split('/').filter(Boolean);
   if (parts.length === 0) return DEFAULT_ROUTE;
-  const mode = parts[0] === 'sasaran' ? 'sasaran' : 'bukti';
-  const panel = parts[1] ?? (mode === 'bukti' ? 'temuan-utama' : 'daftar-prioritas');
-  const param = parts[2] ?? null;
-  return { mode, panel, param };
+  return { section: parts[0], param: parts[1] ?? null };
 }
 
-export function routeHref(mode: Mode, panel: string, param?: string): string {
-  return `#/${mode}/${panel}${param ? '/' + param : ''}`;
+export function routeHref(section: string, param?: string): string {
+  return `#/${section}${param ? '/' + param : ''}`;
 }
 
-export function navigate(mode: Mode, panel: string, param?: string): void {
-  window.location.hash = routeHref(mode, panel, param);
+export function navigate(section: string, param?: string): void {
+  window.location.hash = routeHref(section, param);
 }
 
 export function useHashRoute(): Route {
@@ -38,16 +32,20 @@ export function useHashRoute(): Route {
   return route;
 }
 
-export const BUKTI_PANELS = [
-  { id: 'temuan-utama', label: 'A · Temuan utama' },
-  { id: 'medan-aksesibilitas', label: 'B · Medan dan aksesibilitas' },
-  { id: 'kuadran', label: 'C · Kuadran permintaan dan ketersediaan' },
-  { id: 'dekomposisi', label: 'D · Dekomposisi kesenjangan pasokan' },
-  { id: 'divergensi', label: 'E · Divergensi antar kanal' },
-  { id: 'basis-ekonomi', label: 'F · Basis ekonomi non-pertanian' },
+export const RINGKASAN_SECTIONS = [
+  { id: 'empat-keputusan', label: '1 · Empat jenis keputusan' },
+  { id: 'peta-prioritas', label: '2 · Peta prioritas antar-desa' },
+  { id: 'wilayah-saya', label: '3 · Gambaran per kabupaten dan kota' },
+  { id: 'profil-desa', label: '4 · Profil desa' },
+  { id: 'pembagian-peran', label: '5 · Pembagian peran antar-lembaga' },
 ] as const;
 
-export const SASARAN_PANELS = [
-  { id: 'daftar-prioritas', label: 'G · Daftar prioritas' },
-  { id: 'batas-sumber', label: 'I · Batas tafsir dan sumber data' },
+export const DASAR_BUKTI_SECTIONS = [
+  { id: 'pertanyaan-diuji', label: '6 · Pertanyaan yang diuji' },
+  { id: 'medan-aksesibilitas', label: '7 · Keterjalan medan dan aksesibilitas fisik' },
+  { id: 'dua-kanal', label: '8 · Perbandingan sensitivitas kedua kanal' },
+  { id: 'dimensi-kedua', label: '9 · Dependensi spasial antar-desa' },
+  { id: 'terkendala-medan', label: '10 · Sebaran desa yang terkendala medan' },
+  { id: 'mekanisme-keuangan', label: '11 · Mekanisme ekonomi pada kanal keuangan formal' },
+  { id: 'batas-tafsir', label: '12 · Batas tafsir' },
 ] as const;

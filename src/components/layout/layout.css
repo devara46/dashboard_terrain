@@ -12,34 +12,16 @@
 }
 .app-header-title { display: flex; flex-direction: column; margin-right: auto; }
 .app-header-sub { font-size: var(--step-0); color: var(--andesit-soft); }
-.mode-switch { display: flex; border: 1px solid var(--andesit); }
-.mode-btn {
-  padding: var(--space-2) var(--space-4);
-  text-decoration: none;
-  color: var(--andesit);
-  font-family: var(--face-display);
-  font-size: var(--step-0);
-  font-weight: 600;
-}
-.mode-btn.active { background: var(--andesit); color: var(--kapur); }
 .app-header-actions { display: flex; gap: var(--space-4); }
 .link-btn {
   background: none; border: none; cursor: pointer;
   color: var(--telaga); font-family: var(--face-body); font-size: var(--step-0);
   text-decoration: underline;
 }
-.placeholder-banner {
-  flex-basis: 100%;
-  background: var(--bukit);
-  color: var(--kapur);
-  font-size: var(--step-0);
-  padding: var(--space-2) var(--space-4);
-  margin: calc(var(--space-3) * -1) calc(var(--space-4) * -1) calc(var(--space-3) * -1);
-}
 
 .app-body {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 260px 1fr;
   gap: var(--space-5);
   max-width: 1280px;
   margin: 0 auto;
@@ -47,36 +29,77 @@
 }
 @media (max-width: 900px) {
   .app-body { grid-template-columns: 1fr; }
-  .panel-index { display: none; }
+  .rail { display: none; }
 }
 
-.panel-index {
+.rail {
   position: sticky;
   top: 88px;
   align-self: start;
   font-family: var(--face-display);
   font-size: var(--step-0);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
-.panel-index ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
-.panel-index a {
+.rail-group-label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--kontur);
+  margin-bottom: var(--space-2);
+}
+.rail-boundary {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--kontur);
+  border-top: 1px solid var(--kontur);
+  padding-top: var(--space-3);
+}
+.rail ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.rail a {
   text-decoration: none;
   color: var(--andesit-soft);
   border-left: 2px solid transparent;
   padding-left: var(--space-3);
   display: block;
+  line-height: 1.3;
 }
-.panel-index a.active { color: var(--telaga); border-left-color: var(--telaga); font-weight: 600; }
+.rail a.active { color: var(--telaga); border-left-color: var(--telaga); font-weight: 600; }
 
-.panel-stack { display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
-.panel-section { padding-top: var(--space-3); scroll-margin-top: 96px; }
-.panel-section + .panel-section { border-top: 1px solid var(--kontur); padding-top: var(--space-6); }
-.panel-heading { display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-4); }
-.panel-heading .panel-letter {
+.section-stack { display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
+.app-section { padding-top: var(--space-3); scroll-margin-top: 96px; }
+.app-section + .app-section { border-top: 1px solid var(--kontur); padding-top: var(--space-6); }
+.section-heading { display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-4); }
+.section-heading .section-number {
   font-family: var(--face-display);
   font-size: var(--step-1);
   color: var(--kontur);
 }
-.panel-heading h2 { font-size: var(--step-2); }
+.section-heading h2 { font-size: var(--step-2); }
+
+.evidence-boundary {
+  padding: var(--space-5) 0;
+  border-top: 2px solid var(--andesit);
+  text-align: center;
+}
+.evidence-boundary p {
+  max-width: 42ch;
+  margin: 0 auto var(--space-3);
+  color: var(--andesit-soft);
+  font-size: var(--step-0);
+}
+.evidence-boundary-label {
+  font-family: var(--face-display);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--kontur);
+  display: block;
+  margin-bottom: var(--space-2);
+}
 
 footer.app-footer {
   border-top: 1px solid var(--kontur);
